@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PracticaFinalDI</string>
+    <string name="DBSeries">Database of my favorites TV Shows</string>
+    <string name="ParrillaTelevisiva">TV Guide</string>
+    <string name="MOVIEDB">Favorite TV Shows MOVIEDB</string>
+    <string name="Insertar">Insert</string>
+    <string name="Modificar">Modify</string>
+    <string name="Borrar">Delete</string>
+    <string name="Nombre">Name</string>
+    <string name="Año">Year</string>
+    <string name="Channel">Channel</string>
+    <string name="Temporadas">Seasons</string>
+</resources>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">PracticaFinalDI</string>
+    <string name="DBSeries">Base de datos de mis Series Favoritas</string>
+    <string name="ParrillaTelevisiva">Parrilla Televisiva</string>
+    <string name="MOVIEDB">Series Favoritas MOVIEDB</string>
+    <string name="Insertar">Insertar</string>
+    <string name="Modificar">Modificar</string>
+    <string name="Borrar">Borrar</string>
+    <string name="Nombre">Nombre</string>
+    <string name="Año">Año</string>
+    <string name="Channel">Cadena</string>
+    <string name="Temporadas">Temporadas</string>
+</resources>
