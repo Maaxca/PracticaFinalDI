@@ -1,11 +1,18 @@
 package com.example.practicafinaldi;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,11 +34,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +56,10 @@ public class MiBaseDeDatos extends AppCompatActivity {
     EditText txtNombre,txtAño,txtCadena,txtTemporadas,txtID;
     ListView lista;
     ProgressDialog progressDialog;
+    ArrayList<String>Nombre=new ArrayList<>();
+    ArrayList<String>Año=new ArrayList<>();
+    ArrayList<String>Cadenas=new ArrayList<>();
+    ArrayList<String>Temporadas=new ArrayList<>();
     static final String SERVIDOR="http://192.168.3.76";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +99,124 @@ public class MiBaseDeDatos extends AppCompatActivity {
                 descargarXML.execute("/PracticaDI/listadoXML2.php");
             }
         });
+        buttonInsertar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Insertar insertar=new Insertar();
+                insertar.execute();
+            }
+        });
+        buttonModificar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Modificar modificar=new Modificar();
+                modificar.execute();
+            }
+        });
+        buttonBorrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Borrar borrar=new Borrar();
+                borrar.execute();
+            }
+        });
     }
 
 
+    private class Insertar extends AsyncTask<String,Void,Void>{
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+            String script=SERVIDOR+"/PracticaDI/insertar.php";
+            URLConnection conexion=new URL(script).openConnection();
+
+            conexion.setDoOutput(true);
+
+            PrintStream ps=new PrintStream(conexion.getOutputStream());
+
+            ps.print("nombre="+txtNombre.getText().toString());
+            ps.print("&ano="+txtAño.getText().toString());
+            ps.print("&cadena="+txtCadena.getText().toString());
+            ps.print("&temporadas="+txtTemporadas.getText().toString());
+
+                InputStream inputStream=conexion.getInputStream();
+                BufferedReader br=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                String salida="";
+                String linea="";
+                while((linea=br.readLine())!=null){
+                    salida+=linea+"\n";
+                }
+                br.close();
+                ps.close();
+                System.out.println(salida);
+
+        }catch (MalformedURLException ex)
+        {
+          Logger.getLogger(MiBaseDeDatos.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (IOException e) {
+                Logger.getLogger(MiBaseDeDatos.class.getName()).log(Level.SEVERE, null, e);
+        }
+            return null;
+        }
+
+    }
+    private class Borrar extends AsyncTask<String,Void,Void>{
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+            String id= null;
+
+                id = URLEncoder.encode(txtID.getText().toString(), "UTF-8");
+            String script=SERVIDOR+"/PracticaDI/borrar.php?id="+id;
+            URLConnection conexion= null;
+                conexion = new URL(script).openConnection();
+                conexion.connect();
+
+            InputStream inputStream=conexion.getInputStream();
+            BufferedReader br=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+            String salida="";
+            String linea="";
+            while((linea=br.readLine())!=null){
+                salida+=linea+"\n";
+            }
+            br.close();
+            System.out.println(salida);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+    private class Modificar extends AsyncTask<String,Void,Void>{
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                String id=URLEncoder.encode(txtID.getText().toString(), "UTF-8");
+                String nombre=URLEncoder.encode(txtNombre.getText().toString(), "UTF-8");
+                String ano=URLEncoder.encode(txtAño.getText().toString(), "UTF-8");
+                String cadena=URLEncoder.encode(txtCadena.getText().toString(), "UTF-8");
+                String temporadas=URLEncoder.encode(txtTemporadas.getText().toString(), "UTF-8");
+                String script=SERVIDOR+"/PracticaDI/modificar.php?id="+id+"&nombre="+nombre+"&ano="+ano+"&cadena="+cadena+"&temporadas="+temporadas;
+                URLConnection conexion=new URL(script).openConnection();
+                conexion.connect();
+
+                InputStream inputStream=conexion.getInputStream();
+                BufferedReader br=new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+                String salida="";
+                String linea="";
+                while((linea=br.readLine())!=null){
+                    salida+=linea+"\n";
+                }
+                br.close();
+                System.out.println(salida);
+            } catch (MalformedURLException ex) {
+            } catch (IOException ex) {
+            }
+            return null;
+        }
+    }
     private class DescargarJSON extends AsyncTask<String,Void,Void> {
 
         String todo="";
@@ -228,6 +360,14 @@ public class MiBaseDeDatos extends AppCompatActivity {
                 dato+=" CADENA: "+campos[3];
                 dato+=" NUMERO TEMPORADAS: "+campos[4];
                 list.add(dato);
+                Nombre.removeAll(Nombre);
+                Nombre.add(campos[1]);
+                Año.add(campos[2]);
+                Año.removeAll(Año);
+                Cadenas.add(campos[3]);
+                Cadenas.removeAll(Cadenas);
+                Temporadas.add(campos[4]);
+                Temporadas.removeAll(Temporadas);
             }
             adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item,list);
             lista.setAdapter(adapter);
@@ -309,5 +449,34 @@ public class MiBaseDeDatos extends AppCompatActivity {
             super.onProgressUpdate(values);
             progressDialog.setProgress(progressDialog.getProgress()+10);
         }
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        menu.add(0, v.getId(),0,"Mostrar");
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int Posi = info.position;
+
+        if (item.getTitle()=="Mostrar"){
+                    AlertDialog.Builder builder=new AlertDialog.Builder(this);
+                    builder.setTitle("Datos de la Serie");
+                    builder.setMessage("ID: "+(Posi+1)+
+                            "\n Nombre: "+Nombre.get(Posi)+
+                            "\n Año de Estreno: "+Año.get(Posi)+
+                            "\n Cadena: "+Cadenas.get(Posi)+
+                            "\n Numero Temporadas: "+Temporadas.get(Posi));
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    builder.show();
+        }
+        return true;
     }
 }
