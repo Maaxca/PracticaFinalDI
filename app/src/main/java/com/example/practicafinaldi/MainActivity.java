@@ -25,5 +25,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent,0);
             }
         });
+        btnTele.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(MainActivity.this,ParrilllaTelevisiva.class);
+                startActivityForResult(intent,1);
+            }
+        });
     }
 }

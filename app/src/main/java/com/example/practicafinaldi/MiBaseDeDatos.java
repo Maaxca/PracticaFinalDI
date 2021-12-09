@@ -1,22 +1,28 @@
 package com.example.practicafinaldi;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonArray;
@@ -449,34 +455,5 @@ public class MiBaseDeDatos extends AppCompatActivity {
             super.onProgressUpdate(values);
             progressDialog.setProgress(progressDialog.getProgress()+10);
         }
-    }
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-        menu.add(0, v.getId(),0,"Mostrar");
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int Posi = info.position;
-
-        if (item.getTitle()=="Mostrar"){
-                    AlertDialog.Builder builder=new AlertDialog.Builder(this);
-                    builder.setTitle("Datos de la Serie");
-                    builder.setMessage("ID: "+(Posi+1)+
-                            "\n Nombre: "+Nombre.get(Posi)+
-                            "\n Año de Estreno: "+Año.get(Posi)+
-                            "\n Cadena: "+Cadenas.get(Posi)+
-                            "\n Numero Temporadas: "+Temporadas.get(Posi));
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-                    builder.show();
-        }
-        return true;
     }
 }
